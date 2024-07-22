@@ -14,7 +14,7 @@ export interface FormState{
   photo: '',
 }
 export const formSlice = createSlice({
-  name: "contact",
+  name: "form",
   initialState,
   reducers:{}
 })

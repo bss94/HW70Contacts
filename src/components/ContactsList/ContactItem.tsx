@@ -5,21 +5,22 @@ interface Props {
   name: string;
   photo: string;
   phone: string;
+  onContactClick: VoidFunction;
 }
 
 const ContactItem: React.FC<Props> = ({
-  name, photo
+  name, photo, onContactClick
 }) => {
   return (
     <Row>
       <Col/>
       <Col xs={12} sm={12} md={12} lg={6}>
-        <Card className="mt-3">
+        <Card className="mt-3" onClick={onContactClick}>
           <Row>
-            <Col sm={4}>
-              <Card.Img variant="top" src={photo}/>
+            <Col xs={4} sm={4}>
+              <Card.Img variant="top" src={photo} alt="not found"/>
             </Col>
-            <Col sm={8}>
+            <Col xs={8} sm={8}>
               <Card.Body className="d-flex justify-content-center align-items-center h-100">
                 <Card.Text>
                   {name}
