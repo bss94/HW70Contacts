@@ -1,4 +1,4 @@
-import {Container, Navbar} from 'react-bootstrap';
+import {Container, Nav, Navbar} from 'react-bootstrap';
 import {NavLink} from 'react-router-dom';
 
 const Toolbar = () => {
@@ -8,6 +8,11 @@ const Toolbar = () => {
         <NavLink className="navbar-brand" to="/">
          Contacts
         </NavLink>
+        <Nav>
+          <NavLink className="nav-link" to="/new-contact">
+            add new contact
+          </NavLink>
+        </Nav>
       </Container>
     </Navbar>
   );
