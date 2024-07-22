@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 
+
 export interface FormState {
   name: string;
   phone: string;
@@ -17,7 +18,12 @@ const initialState: FormState = {
 export const formSlice = createSlice({
   name: "form",
   initialState,
-  reducers: {}
+  reducers: {
+  },
+  selectors:{
+    selectState:(state)=>state,
+  }
 });
 
 export const formReducer = formSlice.reducer;
+export const {selectState} = formSlice.selectors;
