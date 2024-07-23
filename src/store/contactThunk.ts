@@ -26,21 +26,21 @@ export const fetchContacts = createAsyncThunk<
   },
 );
 
-export const deleteContact = createAsyncThunk<void, string>(
+export const deleteContact = createAsyncThunk<void, string, { dispatch: AppDispatch }>(
   'contacts/deleteContact',
   async (contactId) => {
     await axiosApi.delete(`contacts/${contactId}.json`);
   },
 );
 
-export const createContact = createAsyncThunk<void, ApiContact>(
+export const createContact = createAsyncThunk<void, ApiContact, { dispatch: AppDispatch }>(
   'contacts/createContact',
   async (apiContact) => {
     await axiosApi.post('/contacts.json', apiContact);
   },
 );
 
-export const fetchOneContact = createAsyncThunk<ApiContact, string>(
+export const fetchOneContact = createAsyncThunk<ApiContact, string, { dispatch: AppDispatch }>(
   'contacts/fetchOneContact',
   async (id) => {
     const {data: contact} = await axiosApi.get<ApiContact | null>(
@@ -57,7 +57,7 @@ export interface UpdateContactArg {
   apiContact: ApiContact;
 }
 
-export const updateContact = createAsyncThunk<void, UpdateContactArg>(
+export const updateContact = createAsyncThunk<void, UpdateContactArg, { dispatch: AppDispatch }>(
   'contacts/updateContact',
   async ({id, apiContact}) => {
     await axiosApi.put(`contacts/${id}.json`, apiContact);
