@@ -6,7 +6,7 @@ const Toolbar = () => {
     <Navbar bg="warning" data-bs-theme="dark">
       <Container>
         <NavLink className="navbar-brand" to="/">
-         Contacts
+          Contacts
         </NavLink>
         <Nav>
           <NavLink className="nav-link" to="/new-contact">

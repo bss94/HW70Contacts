@@ -3,16 +3,29 @@ import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {closeModal, selectCurrentContact, selectDeleting, selectShow} from '../../store/contactSlice';
 import SpinnerBtn from '../SpinnerBtn/SpinnerBtn';
 import {deleteContact, fetchContacts} from '../../store/contactThunk';
+import {useNavigate} from 'react-router-dom';
+import {toast} from 'react-toastify';
 
 const ModalContact = () => {
   const dispatch = useAppDispatch();
   const contact = useAppSelector(selectCurrentContact);
   const show = useAppSelector(selectShow);
   const deleting = useAppSelector(selectDeleting);
+  const navigate = useNavigate();
 
   const deleteThisContact = async (id: string) => {
-    await dispatch(deleteContact(id));
-    dispatch(fetchContacts());
+    try {
+      await dispatch(deleteContact(id));
+      dispatch(fetchContacts());
+      toast.success('Contact deleted!');
+    } catch (e) {
+      toast.error('Cant delete contact! Something wrong');
+    }
+  };
+
+  const editThisContact = (id: string) => {
+    navigate(`/contacts/${id}/edit`);
+    dispatch(closeModal());
   };
 
   return contact && (
@@ -47,16 +60,21 @@ const ModalContact = () => {
         <Row>
           <Col/>
           <Col xs={3}>
-            <Button className="btn-success w-100 mb-3">Edit</Button>
+            <Button
+              className="btn-success w-100 mb-3"
+              onClick={() => editThisContact(contact.id)}
+            >Edit</Button>
           </Col>
           <Col xs={3}>
             <SpinnerBtn className="w-100 mb-3"
                         isSending={deleting}
                         variant={'danger'}
                         onClick={() => {
-                          deleteThisContact(contact.id);
+                          void deleteThisContact(contact.id);
                         }}
-            >Delete</SpinnerBtn>
+            >
+              Delete
+            </SpinnerBtn>
           </Col>
           <Col/>
         </Row>

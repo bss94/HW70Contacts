@@ -1,15 +1,17 @@
-import {Contact, ContactMutation} from '../types';
+import {ApiContact, Contact, ContactMutation} from '../types';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {createContact, deleteContact, fetchContacts} from './contactThunk';
+import {createContact, deleteContact, fetchContacts, fetchOneContact, updateContact} from './contactThunk';
 
 
 export interface ContactState {
   contacts: Contact[];
   show: boolean;
   currentContact: Contact | null;
-  editContact:ContactMutation|null;
+  editContact: ContactMutation | null;
   fetching: boolean;
-  creating:boolean;
+  creating: boolean;
+  fetchingOneContact: boolean;
+  updating: boolean;
   deleting: boolean;
 }
 
@@ -17,9 +19,11 @@ const initialState: ContactState = {
   contacts: [],
   show: false,
   currentContact: null,
-  editContact:null,
+  editContact: null,
   fetching: false,
-  creating:false,
+  creating: false,
+  fetchingOneContact: false,
+  updating: false,
   deleting: false,
 };
 
@@ -35,16 +39,10 @@ export const contactSlice = createSlice({
       state.show = false;
       state.currentContact = null;
     },
-    toEditFromModal:(state,{payload:editContact}:PayloadAction<ContactMutation>)=>{
-      state.editContact = {
-        name:editContact.name,
-        email:editContact.email,
-        phone:editContact.phone,
-        photo:editContact.photo,
-      }
-    },
-    endEdit:(state)=>{
-      state.editContact = null
+    resetState: (state) => {
+      state.currentContact = null;
+      state.editContact = null;
+      state.show = false;
     }
   },
   extraReducers: (builder) => {
@@ -55,9 +53,11 @@ export const contactSlice = createSlice({
       .addCase(fetchContacts.fulfilled, (state, {payload: items}) => {
         state.fetching = false;
         state.contacts = items;
+        state.editContact = null;
       })
       .addCase(fetchContacts.rejected, (state) => {
         state.fetching = false;
+        state.editContact = null;
       });
     builder
       .addCase(deleteContact.pending, (state) => {
@@ -83,13 +83,38 @@ export const contactSlice = createSlice({
       .addCase(createContact.rejected, (state) => {
         state.creating = false;
       });
+    builder
+      .addCase(fetchOneContact.pending, (state) => {
+        state.fetchingOneContact = true;
+      })
+      .addCase(fetchOneContact.fulfilled, (state, {payload: apiContact}: PayloadAction<ApiContact>) => {
+        state.editContact = apiContact;
+        state.fetchingOneContact = false;
+      })
+      .addCase(fetchOneContact.rejected, (state) => {
+        state.fetchingOneContact = false;
+      });
+    builder
+      .addCase(updateContact.pending, (state) => {
+        state.updating = true;
+      })
+      .addCase(updateContact.fulfilled, (state) => {
+        state.updating = false;
+        state.editContact = null;
+      })
+      .addCase(updateContact.rejected, (state) => {
+        state.updating = false;
+      });
   },
   selectors: {
     selectContacts: (state) => state.contacts,
     selectShow: (state) => state.show,
     selectCurrentContact: (state) => state.currentContact,
+    selectEditContact: (state) => state.editContact,
     selectFetching: (state) => state.fetching,
     selectCreating: (state) => state.creating,
+    selectFetchOne: (state) => state.fetchingOneContact,
+    selectUpdating: (state) => state.updating,
     selectDeleting: (state) => state.deleting,
   }
 });
@@ -97,12 +122,16 @@ export const contactSlice = createSlice({
 export const contactReducer = contactSlice.reducer;
 export const {
   openModal,
-  closeModal
+  closeModal,
+  resetState,
 } = contactSlice.actions;
 export const {
   selectShow,
   selectFetching,
   selectCurrentContact,
+  selectEditContact,
+  selectFetchOne,
+  selectUpdating,
   selectContacts,
   selectCreating,
   selectDeleting,

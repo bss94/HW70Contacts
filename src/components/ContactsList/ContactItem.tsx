@@ -32,7 +32,6 @@ const ContactItem: React.FC<Props> = ({
       </Col>
       <Col/>
     </Row>
-
   );
 };
 

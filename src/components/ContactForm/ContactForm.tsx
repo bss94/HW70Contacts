@@ -1,14 +1,13 @@
-import {Card, Col, Form} from 'react-bootstrap';
+import {Button, Card, Col, Form} from 'react-bootstrap';
 import React, {FormEvent, useState} from 'react';
-import {useAppDispatch} from '../../app/hooks';
-import {ContactMutation} from '../../types';
-import {createContact} from '../../store/contactThunk';
+import {ApiContact, ContactMutation} from '../../types';
 import SpinnerBtn from '../SpinnerBtn/SpinnerBtn';
+import {useNavigate} from 'react-router-dom';
 
 interface Props {
   existingContact?: ContactMutation;
-  id?: string;
-  creating: boolean;
+  onSubmit: (contact: ApiContact) => void;
+  sending: boolean;
 }
 
 const initial: ContactMutation = {
@@ -18,8 +17,8 @@ const initial: ContactMutation = {
   phone: '',
 };
 
-const ContactForm: React.FC<Props> = ({existingContact, id, creating}) => {
-  const dispatch = useAppDispatch();
+const ContactForm: React.FC<Props> = ({existingContact, onSubmit, sending}) => {
+  const navigate = useNavigate();
   const [formState, setFormState] = useState<ContactMutation>(
     existingContact ?
       existingContact :
@@ -37,16 +36,14 @@ const ContactForm: React.FC<Props> = ({existingContact, id, creating}) => {
       )
     );
   };
-  const onSubmit = (event: FormEvent) => {
+  const onFormSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!id) {
-      dispatch(createContact(formState));
-    }
+    onSubmit(formState);
   };
   return (
     <div>
-      <Form className="mt-5" onSubmit={onSubmit}>
-        <Form.Group as={'div'} className="mb-3 row">
+      <Form className="mt-5" onSubmit={onFormSubmit}>
+        <Form.Group as={'div'} className="mb-3 row" controlId="name">
           <Col sm={4}>
             <Form.Label>Name</Form.Label>
           </Col>
@@ -61,7 +58,7 @@ const ContactForm: React.FC<Props> = ({existingContact, id, creating}) => {
           </Col>
         </Form.Group>
 
-        <Form.Group as={'div'} className="mb-3 row">
+        <Form.Group as={'div'} className="mb-3 row" controlId="phone">
           <Col sm={4}>
             <Form.Label>Phone</Form.Label>
           </Col>
@@ -75,7 +72,7 @@ const ContactForm: React.FC<Props> = ({existingContact, id, creating}) => {
             />
           </Col>
         </Form.Group>
-        <Form.Group as={'div'} className="mb-3 row">
+        <Form.Group as={'div'} className="mb-3 row" controlId="email">
           <Col sm={4}>
             <Form.Label>Email address</Form.Label>
           </Col>
@@ -90,7 +87,7 @@ const ContactForm: React.FC<Props> = ({existingContact, id, creating}) => {
           </Col>
         </Form.Group>
 
-        <Form.Group as={'div'} className="mb-3 row">
+        <Form.Group as={'div'} className="mb-3 row" controlId="photo">
           <Col sm={4}>
             <Form.Label>Photo</Form.Label>
           </Col>
@@ -115,7 +112,14 @@ const ContactForm: React.FC<Props> = ({existingContact, id, creating}) => {
 
         </Form.Group>
 
-        <SpinnerBtn type={'submit'} isSending={creating}>{!id ? 'Create' : 'Edit'}</SpinnerBtn>
+        <SpinnerBtn type="submit"
+                    variant="warning"
+                    isSending={sending}
+                    className="text-white mx-3"
+        >{!existingContact ? 'Create' : 'Edit'}</SpinnerBtn>
+        <Button className="btn-secondary mx-3" onClick={() => {
+          navigate('/');
+        }}>Back to Contacts</Button>
       </Form>
     </div>
   );
